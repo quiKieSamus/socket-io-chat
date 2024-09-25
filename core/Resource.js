@@ -11,7 +11,7 @@ export class Resource {
         return this.database[this.resource].filter(resource => filter == resource[property]);
     }
     saveOne(data) {
-        if (!this.validate(data)) throw new InvalidSchema(`Invalid schema for Resource ${this.resource}`);
+        if (typeof this.validate(data) == "string") throw new InvalidSchema(this.resource, this.validate(data));
         const verifyingUniqueness = this.schema.map((schemaProp) => {
             const prop = schemaProp.name;
             const unique = schemaProp.unique;
@@ -48,5 +48,10 @@ export class Resource {
     #writeDb() {
         fs.writeFileSync(this.file, JSON.stringify(this.database));
     }
+    /**
+     * checks based on an input object if it has the properties defined in schema. Returns true if everything is fine, otherwise, returns the name of the property that is missing
+     * @param {object} data input data to verify
+     *  @returns {true|string} 
+     */
     validate(data) { };
 }

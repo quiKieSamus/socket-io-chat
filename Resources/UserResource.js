@@ -21,10 +21,10 @@ export class UserResource extends Resource {
         const props = Object.getOwnPropertyNames(data);
         for (let i = 0; i < this.schema.length; i++) {
             const schemaProp = this.schema[i].name;
-            if (!props.includes(schemaProp)) return false;
+            if (!props.includes(schemaProp)) return schemaProp;
         }
         return true;
     }
 }
 
-console.log((new UserResource()).saveOne({name: "ruben", email: "artorias201001@gmail.com", password: "12341"}));
+console.log((new UserResource()).saveOne({name: "ruben", email: "artorias201001@gmail.com", passwor: "12341"}));

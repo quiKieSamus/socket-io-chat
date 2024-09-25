@@ -1,3 +1,6 @@
 export class ResourceNotUnique extends Error {
-    message = "Resource is not unique";
+    constructor(resource) {
+        super();
+        this.message = `${resource} Resource is not unique`;
+    }
 }

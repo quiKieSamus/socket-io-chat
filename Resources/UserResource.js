@@ -5,26 +5,23 @@ export class UserResource extends Resource {
     schema = [
         {
             name: "name",
-            unique: false
+            unique: false,
+            nullable: false
         },
         {
             name: "email",
-            unique: true
+            unique: true,
+            nullable: false
         },
         {
             name: "password",
-            unique: false
+            unique: false,
+            nullable: false
+        },
+        {
+            name: "sessionToken",
+            unique: true,
+            nullable: true
         }
     ];
-
-    validate(data) {
-        const props = Object.getOwnPropertyNames(data);
-        for (let i = 0; i < this.schema.length; i++) {
-            const schemaProp = this.schema[i].name;
-            if (!props.includes(schemaProp)) return schemaProp;
-        }
-        return true;
-    }
 }
-
-console.log((new UserResource()).saveOne({name: "ruben", email: "artorias201001@gmail.com", passwor: "12341"}));

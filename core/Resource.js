@@ -1,27 +1,25 @@
 import fs from 'fs';
 import { ResourceNotUnique } from '../Errors/ResourceNotUnique.js';
 import { InvalidSchema } from '../Errors/InvalidSchema.js';
+import { Validator } from './Validator.js';
 
 export class Resource {
     file = "./database.json";
     database = JSON.parse(fs.readFileSync(this.file));
     resource;
     schema;
+    validator = Validator;
     getOneOrMore(property, filter) {
         return this.database[this.resource].filter(resource => filter == resource[property]);
     }
     saveOne(data) {
-        if (typeof this.validate(data) == "string") throw new InvalidSchema(this.resource, this.validate(data));
-        const verifyingUniqueness = this.schema.map((schemaProp) => {
-            const prop = schemaProp.name;
-            const unique = schemaProp.unique;
-            if (!unique) return;
-            const search = this.getOneOrMore(prop, data[prop]);
-            if (search.length > 1) return true;
-        });
-        if (verifyingUniqueness.includes(true)) {
-            throw new ResourceNotUnique("Resource not unique");
+        if (typeof this.validator.checkSchema(this.schema, data) == "string") throw new InvalidSchema(this.resource, this.validator.checkSchema(this.schema, data));
+
+
+        if (!this.validator.checkUniqueness(this.schema, data, this)) {
+            throw new ResourceNotUnique(this.resource);
         }
+
         this.database[this.resource].push(data);
         this.#writeDb();
         return this.database[this.resource].length;
@@ -48,10 +46,4 @@ export class Resource {
     #writeDb() {
         fs.writeFileSync(this.file, JSON.stringify(this.database));
     }
-    /**
-     * checks based on an input object if it has the properties defined in schema. Returns true if everything is fine, otherwise, returns the name of the property that is missing
-     * @param {object} data input data to verify
-     *  @returns {true|string} 
-     */
-    validate(data) { };
 }
